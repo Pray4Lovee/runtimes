@@ -1,35 +1,34 @@
-// Copyright (C) Parity Technologies (UK) Ltd.
-// SPDX-License-Identifier: Apache-2.0
-
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// 	http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+#![cfg_attr(not(feature = "std"), no_std)]
 
 use crate::*;
-use frame_support::traits::{tokens::UnityOrOuterConversion, FromContains};
+use frame_support::parameter_types;
+use frame_support::traits::{tokens::UnityOrOuterConversion, EnsureOrigin};
+use frame_support::PalletId;
+use frame_support::traits::EitherOfDiverse;
+use frame_support::traits::IdentityLookup;
+use parachains_common::pay::LocalPay;
 use parachains_common::pay::VersionedLocatableAccount;
 use polkadot_runtime_common::impls::{ContainsParts, VersionedLocatableAsset};
+use sp_runtime::Permill;
+use xcm_config::LocationToAccountId;
 
+// ------------------------
+// Treasury
+// ------------------------
 parameter_types! {
-	pub const SpendPeriod: BlockNumber = 24 * RC_DAYS;
-	pub const DisableSpends: BlockNumber = BlockNumber::MAX;
+	pub const SpendPeriod: u32 = 24 * RC_DAYS;
+	pub const DisableSpends: u32 = u32::MAX;
 	pub const Burn: Permill = Permill::from_percent(1);
 	pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
-	pub const PayoutSpendPeriod: BlockNumber = 90 * RC_DAYS;
+	pub const PayoutSpendPeriod: u32 = 90 * RC_DAYS;
 	pub const MaxApprovals: u32 = 100;
-	// Account address: `13UVJyLnbVp9RBZYFwFGyDvVd1y27Tt8tkntv6Q7JVPhFsTB`
+
+	// Treasury account derived from PalletId
 	pub TreasuryAccount: AccountId = Treasury::account_id();
 }
 
-pub type TreasuryPaymaster = parachains_common::pay::LocalPay<
+// Local paymaster integrated for XCM/local assets
+pub type TreasuryPaymaster = LocalPay<
 	NativeAndAssets,
 	TreasuryAccount,
 	xcm_config::LocationToAccountId,
@@ -40,7 +39,7 @@ impl pallet_treasury::Config for Runtime {
 	type Currency = Balances;
 	type RejectOrigin = EitherOfDiverse<EnsureRoot<AccountId>, Treasurer>;
 	type RuntimeEvent = RuntimeEvent;
-	type SpendPeriod = pallet_ah_migrator::LeftOrRight<AhMigrator, DisableSpends, SpendPeriod>;
+	type SpendPeriod = SpendPeriod;
 	type Burn = Burn;
 	type BurnDestination = ();
 	type SpendFunds = Bounties;
@@ -60,14 +59,14 @@ impl pallet_treasury::Config for Runtime {
 	type BlockNumberProvider = RelaychainDataProvider<Runtime>;
 }
 
+// ------------------------
+// Bounties
+// ------------------------
 parameter_types! {
-	// where `176` is the size of the `Bounty` struct in bytes.
 	pub const BountyDepositBase: Balance = system_para_deposit(0, 176);
-	// per byte for the bounty description.
 	pub const DataDepositPerByte: Balance = system_para_deposit(0, 1);
-	pub const BountyDepositPayoutDelay: BlockNumber = 0;
-	// Bounties expire after 10 years.
-	pub const BountyUpdatePeriod: BlockNumber = 10 * 12 * 30 * RC_DAYS;
+	pub const BountyDepositPayoutDelay: u32 = 0;
+	pub const BountyUpdatePeriod: u32 = 10 * 12 * 30 * RC_DAYS;
 	pub const MaximumReasonLength: u32 = 16384;
 	pub const CuratorDepositMultiplier: Permill = Permill::from_percent(50);
 	pub const CuratorDepositMin: Balance = 10 * DOLLARS;
@@ -91,6 +90,9 @@ impl pallet_bounties::Config for Runtime {
 	type WeightInfo = weights::pallet_bounties::WeightInfo<Runtime>;
 }
 
+// ------------------------
+// Child Bounties
+// ------------------------
 parameter_types! {
 	pub const MaxActiveChildBountyCount: u32 = 100;
 	pub const ChildBountyValueMinimum: Balance = BountyValueMinimum::get() / 10;
@@ -103,20 +105,15 @@ impl pallet_child_bounties::Config for Runtime {
 	type WeightInfo = weights::pallet_child_bounties::WeightInfo<Runtime>;
 }
 
-/// The [frame_support::traits::tokens::ConversionFromAssetBalance] implementation provided by the
-/// `AssetRate` pallet instance.
-///
-/// With additional decoration to identify different IDs/locations of native asset and provide a
-/// one-to-one balance conversion for them.
+// ------------------------
+// Assets Conversion / Rate
+// ------------------------
 pub type AssetRateWithNative = UnityOrOuterConversion<
 	ContainsParts<
-		FromContains<
-			(
-				xcm_builder::IsSiblingSystemParachain<ParaId, xcm_config::SelfParaId>,
-				Equals<xcm_config::Here>,
-			),
-			xcm_builder::IsParentsOnly<ConstU8<1>>,
-		>,
+		frame_support::traits::FromContains<(
+			xcm_builder::IsSiblingSystemParachain<ParaId, xcm_config::SelfParaId>,
+			Equals<xcm_config::Here>,
+		)>
 	>,
 	AssetRate,
 >;
