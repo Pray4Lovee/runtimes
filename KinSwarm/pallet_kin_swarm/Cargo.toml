@@ -1,0 +1,32 @@
+[package]
+name = "pallet-kin-swarm"
+version = "0.1.0"
+edition = "2021"
+description = "KinSwarm on-chain worker, wage, PTO, and epoch-settlement pallet"
+
+[dependencies]
+serde = { version = "1.0.163", default-features = false, features = ["derive"] }
+codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
+
+sp-core = { version = "35.0.0", default-features = false }
+sp-std = { version = "13.0.0", default-features = false }
+sp-runtime = { version = "38.0.0", default-features = false }
+
+frame-support = { version = "38.0.0", default-features = false }
+frame-system = { version = "38.0.0", default-features = false }
+
+[dev-dependencies]
+sp-io = "38.0.0"
+sp-keyring = "38.0.0"
+
+[features]
+default = ["std"]
+std = [
+    "serde/std",
+    "codec/std",
+    "sp-core/std",
+    "sp-std/std",
+    "sp-runtime/std",
+    "frame-support/std",
+    "frame-system/std",
+]
