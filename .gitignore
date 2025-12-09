@@ -41,3 +41,48 @@ target/
 *.snap
 *.json
 *.lz4
+# --- KinSwarm Pallet & Substrate Runtime Safety ---
+# Prevent accidental commits of generated wasm
+**/runtime/**/wasm/
+**/runtime/**/target/
+
+# Benchmark + weight output
+**/weights.rs
+**/weights/
+**/benchmarking/.tmp/
+**/benchmarking/.cache/
+
+# Generated chainspecs & state dumps
+*.chainspec.json
+*.state
+local-chainspec/
+local-testnet/
+
+# Build artifacts & temp dirs
+artifacts/
+generated/
+output/
+cache/
+tmp/
+.temp/
+
+# Tooling & IDE
+.yarn/
+.yarn/cache/
+.pnpm/
+.pnpm-store/
+.eslintcache
+
+# Secrets & keys (never commit)
+keystore/
+keys/
+*.pem
+*.key
+*.p12
+
+# Binary output
+*.wasm
+*.bin
+*.so
+*.dylib
+*.dll
