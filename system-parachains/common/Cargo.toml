@@ -1,11 +1,11 @@
 [package]
-authors.workspace = true
-description = "Shared utilities between system-parachains runtimes"
-edition.workspace = true
-license.workspace = true
 name = "system-parachains-common"
-repository.workspace = true
-version.workspace = true
+version = "0.1.0"
+authors = ["totalwine2338 <totalwine2338@gmail.com>"]
+edition = "2021"
+license = "Apache-2.0"
+description = "Shared utilities between system-parachains runtimes"
+repository = "https://github.com/your-org/system-parachains-common"
 
 [dependencies]
 log = { workspace = true }
@@ -31,43 +31,43 @@ pallet-treasury = { workspace = true, optional = true }
 [features]
 default = ["std"]
 std = [
-	"codec/std",
-	"cumulus-pallet-parachain-system/std",
-	"cumulus-primitives-core/std",
-	"frame-support/std",
-	"log/std",
-	"pallet-treasury/std",
-	"parachains-common/std",
-	"polkadot-primitives/std",
-	"polkadot-runtime-common/std",
-	"scale-info/std",
-	"sp-api/std",
-	"sp-core/std",
-	"sp-runtime/std",
-	"sp-state-machine/std",
-	"xcm-executor/std",
-	"xcm/std",
+    "codec/std",
+    "cumulus-pallet-parachain-system/std",
+    "cumulus-primitives-core/std",
+    "frame-support/std",
+    "log/std",
+    "pallet-treasury/std",
+    "parachains-common/std",
+    "polkadot-primitives/std",
+    "polkadot-runtime-common/std",
+    "scale-info/std",
+    "sp-api/std",
+    "sp-core/std",
+    "sp-runtime/std",
+    "sp-state-machine/std",
+    "xcm-executor/std",
+    "xcm/std",
 ]
 
 runtime-benchmarks = [
-	"cumulus-pallet-parachain-system/runtime-benchmarks",
-	"cumulus-primitives-core/runtime-benchmarks",
-	"frame-support/runtime-benchmarks",
-	"pallet-treasury",
-	"pallet-treasury/runtime-benchmarks",
-	"parachains-common/runtime-benchmarks",
-	"polkadot-primitives/runtime-benchmarks",
-	"polkadot-runtime-common/runtime-benchmarks",
-	"sp-runtime/runtime-benchmarks",
-	"xcm-executor/runtime-benchmarks",
-	"xcm/runtime-benchmarks",
+    "cumulus-pallet-parachain-system/runtime-benchmarks",
+    "cumulus-primitives-core/runtime-benchmarks",
+    "frame-support/runtime-benchmarks",
+    "pallet-treasury",
+    "pallet-treasury/runtime-benchmarks",
+    "parachains-common/runtime-benchmarks",
+    "polkadot-primitives/runtime-benchmarks",
+    "polkadot-runtime-common/runtime-benchmarks",
+    "sp-runtime/runtime-benchmarks",
+    "xcm-executor/runtime-benchmarks",
+    "xcm/runtime-benchmarks",
 ]
 
 try-runtime = [
-	"cumulus-pallet-parachain-system/try-runtime",
-	"frame-support/try-runtime",
-	"pallet-treasury/try-runtime",
-	"parachains-common/try-runtime",
-	"polkadot-runtime-common/try-runtime",
-	"sp-runtime/try-runtime",
+    "cumulus-pallet-parachain-system/try-runtime",
+    "frame-support/try-runtime",
+    "pallet-treasury/try-runtime",
+    "parachains-common/try-runtime",
+    "polkadot-runtime-common/try-runtime",
+    "sp-runtime/try-runtime",
 ]
