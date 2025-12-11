@@ -16,7 +16,7 @@ use system_parachains_common::pay::LocalPay;
 
 // ----------------------------
 // Treasury configuration
-// ----------------------------
+// ---------------------------
 parameter_types! {
     pub const SpendPeriod: BlockNumber = 24 * RC_DAYS;
     pub const DisableSpends: BlockNumber = BlockNumber::MAX;
@@ -33,15 +33,13 @@ pub type TreasuryPaymaster = LocalPay<
     NativeAndAssets,
     TreasuryAccount,
     xcm_config::LocationToAccountId,
->;
-
-impl pallet_treasury::Config for Runtime {
+>;impl pallet_treasury::Config for Runtime {
     type PalletId = TreasuryPalletId;
     type Currency = Balances;
     type RejectOrigin = EitherOfDiverse<EnsureRoot<AccountId>, Treasurer>;
     type RuntimeEvent = RuntimeEvent;
     type SpendPeriod = pallet_ah_migrator::LeftOrRight<AhMigrator, DisableSpends, SpendPeriod>;
-    type Burn = Burn;
+    type Burn = Burn; // keep the 1% burn
     type BurnDestination = ();
     type SpendFunds = Bounties;
     type MaxApprovals = MaxApprovals;
@@ -60,14 +58,7 @@ impl pallet_treasury::Config for Runtime {
     type BlockNumberProvider = RelaychainDataProvider<Runtime>;
 }
 
-// ----------------------------
-// Bounties configuration
-// ----------------------------
-parameter_types! {
-    pub const BountyDepositBase: Balance = system_para_deposit(0, 176);
-    pub const DataDepositPerByte: Balance = system_para_deposit(0, 1);
-    pub const BountyDepositPayoutDelay: BlockNumber = 0;
-    pub const BountyUpdatePeriod: BlockNumber = 10 * 12 * 30 * RC_DAYS;
+pub const BountyUpdatePeriod: BlockNumber = 10 * 12 * 30 * RC_DAYS;
     pub const MaximumReasonLength: u32 = 16384;
     pub const CuratorDepositMultiplier: Permill = Permill::from_percent(50);
     pub const CuratorDepositMin: Balance = 10 * DOLLARS;
