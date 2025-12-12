@@ -1,3 +1,4 @@
+
 name: Review-Trigger
 
 on:
@@ -44,10 +45,8 @@ jobs:
           # We get the list of reviewers who approved the PR
           REVIEWERS=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews \
           --jq '{reviewers: [.[] | select(.state == "APPROVED") | .user.login]}')
-
           # We request them to review again
           echo $REVIEWERS | gh api --method POST repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/requested_reviewers --input -
-
           echo "::error::Project needs to be reviewed again"
           exit 1
         env:
